@@ -9,7 +9,7 @@ edition = "2018"
 [dependencies]
 tokio = { version = "0.3.0", features = ["macros", "rt-multi-thread"] }
 tokio-compat-02 = "0.1.2"
-warp = { version = "0.2", features = ["tls"] }
+warp = { version = "0.2", features = [] }
 http = "0.2"
 sqlx = { version = "0.4", features = ["chrono", "postgres", "macros", "runtime-tokio-native-tls", "uuid"] }
 serde = { version = "1.0", features = ["derive"] }

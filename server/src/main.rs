@@ -76,19 +76,7 @@ async fn main() {
     );
 
     let server = warp::serve(routes);
-
-    match (env::var("CERT_PATH"), env::var("KEY_PATH")) {
-        (Ok(cp), Ok(kp)) => {
-            server
-                .tls()
-                .cert_path(cp)
-                .key_path(kp)
-                .run(ip_tuple)
-                .compat()
-                .await;
-        }
-        _ => server.run(ip_tuple).compat().await,
-    }
+    server.run(ip_tuple).compat().await;
 }
 
 #[derive(Serialize, Deserialize)]
