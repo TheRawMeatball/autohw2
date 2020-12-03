@@ -36,7 +36,7 @@ export function Navigation(props: {
       <Navbar color="dark" dark expand="md" className="mb-2">
         <NavbarBrand tag={Link} to="/">AutoHW</NavbarBrand>
         <NavbarToggler onClick={toggle} />
-        <LoggedInItems user={props.user} state={isOpen} />
+        {props.user && (<LoggedInItems user={props.user} state={isOpen} />)}
       </Navbar>
     </div>
   );
@@ -65,13 +65,9 @@ function LoggedInItems(props: Props) {
           <NavLink tag={Link} to="/change-settings">Genel Ayarlar</NavLink>
         </NavItem>
       </Nav>
-      {props.user && (
-        <>
-          <NavbarText className="ml-auto">{props.user.username}</NavbarText>
-          <NavbarText className="ml-2">{props.user.className}</NavbarText>
-          <Button className="ml-2" onClick={() => logout()}>Çıkış yap</Button>
-        </>
-      )}
+      <NavbarText className="ml-auto">{props.user!.username}</NavbarText>
+      <NavbarText className="ml-2">{props.user!.className}</NavbarText>
+      <Button className="ml-2" onClick={() => logout()}>Çıkış yap</Button>
     </Collapse>
   )
 }
