@@ -39,10 +39,13 @@ async fn main() {
     let routes = auth_routes
         .or(api_routes)
         .or(client)
-        .or(warp::any()
-            .map(move || index.clone())
-            .and_then(|i| async move { Ok::<Html<&'static str>, Rejection>(warp::reply::html(i)) })
-        )
+        .recover(move |err: Rejection| async move {
+            if err.is_not_found() {
+                Ok::<Html<&'static str>, Rejection>(warp::reply::html(index))
+            } else {
+                Err(err)
+            }
+        })
         .recover(|err: Rejection| async move {
             Ok::<_, Rejection>(match err.find() {
                 Some(Errors::Unauthorized) => {
