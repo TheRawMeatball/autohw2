@@ -9,21 +9,21 @@ import { Navigation } from './Navigation';
 import Homepage from './Homepage';
 import AddHomework from './AddHomework';
 import LoginAndRegister from './AuthenticationView';
-import { GlobalContextObject, GlobalContext, AuthContextObject, DAY_MS, useAuthState } from './utils/GlobalState';
+import { GlobalContextObject, GlobalContext, AuthContextObject, DAY_MS } from './utils/GlobalState';
 import { Homework, User, VisibilityGroup as VG, VisibilityGroupsList } from "./utils/Models";
 import { Container, Row } from 'reactstrap';
 import { getHomeworkList, getSubjectList, isOk } from './utils/ApiFetch';
 import ChangeSettings from './ChangeSettings';
 import { groupBy } from './utils/Sort';
 
-function offsetNow() {
-  return new Date(new Date().toDateString());
+function date() {
+  return new Date(new Date(new Date().getTime() - 8 * 60 * 60 * 1000).toDateString());
 }
 
 export default function App() {
   const [hwList, setHwList] = useState<Map<string, Homework>>(new Map());
   const [subjectList, setSubjectList] = useState<Set<string>>(new Set());
-  const [now, setNow] = useState(offsetNow());
+  const [now, setNow] = useState(date());
   const [user, __setUser] = useState<User | undefined>(loadUser());
   const setUser = (user: User) => {
     __setUser(user);
@@ -42,8 +42,8 @@ export default function App() {
 
   useEffect(() => {
     const id = setInterval(() => {
-      if (now !== offsetNow()) {
-        setNow(offsetNow());
+      if (now.getTime() !== date().getTime()) {
+        setNow(date());
       }
     }, 60000);
 
