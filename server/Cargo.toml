@@ -1,0 +1,22 @@
+[package]
+name = "server"
+version = "0.1.0"
+authors = ["TheRawMeatball <therawmeatball@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = { version = "0.3.0", features = ["macros", "rt-multi-thread"] }
+tokio-compat-02 = "0.1.2"
+warp = { version = "0.2", features = ["tls"] }
+http = "0.2"
+sqlx = { version = "0.4", features = ["chrono", "postgres", "macros", "runtime-tokio-native-tls", "uuid"] }
+serde = { version = "1.0", features = ["derive"] }
+bcrypt = "0.8"
+uuid = { version = "0.8", features = ["serde"] }
+rand = "0.7"
+chrono = { version = "0.4", features = ["serde"] }
+dotenv = "0.15"
+rust-embed = "5.6"
+warp-embed = "0.1"

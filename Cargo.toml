@@ -1,0 +1,9 @@
+[workspace]
+members = [
+    "frontend/src/algorithm",
+    "server",
+]
+
+[profile.release.package.algorithm]
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"

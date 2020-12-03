@@ -1,0 +1,1 @@
+INSERT INTO "refresh_tokens" ("token", "last_used", "user_id") VALUES (gen_random_uuid(), now(), $1) RETURNING "token";

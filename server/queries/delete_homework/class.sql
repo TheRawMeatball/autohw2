@@ -1,0 +1,1 @@
+DELETE FROM homework WHERE id = $1;
