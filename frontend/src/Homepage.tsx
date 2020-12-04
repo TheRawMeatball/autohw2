@@ -161,7 +161,7 @@ function useDateString(seeAlgorithm: boolean) {
   const program = useAlgorithm();
   const past = usePastCheck();
   return (date: Date) =>
-    past(date) ? `${date.toDateString() === tomorrow.toDateString() ? "Yarın" : new Intl.DateTimeFormat("tr", { weekday: "long" }).format(date)}` +
+    !past(date) ? `${date.toDateString() === tomorrow.toDateString() ? "Yarın" : new Intl.DateTimeFormat("tr", { weekday: "long" }).format(date)}` +
       ` (${date.toLocaleDateString()})` +
       (seeAlgorithm ? ` (${program[dayDiff(date, now)] || 0})` : "")
       : `${date.toLocaleDateString()}`;

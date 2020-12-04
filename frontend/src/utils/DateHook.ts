@@ -58,5 +58,5 @@ export const useSorted = <T extends SortKeyType>(gt: T, hwList: Homework[], reve
 
 export const usePastCheck = () => {
     const { now } = useGlobalState();
-    return (date: Date) => dayDiff(date, now) >= 0
+    return (date: Date) => dayDiff(date, now) <= 0
 };
