@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuthState, useGlobalState } from './utils/GlobalState';
 import { Alert, Button, Col, Form, FormGroup, Input, InputGroup, Label } from 'reactstrap';
 import { useForm } from "react-hook-form";
-import { changeSettings, isOk } from "./utils/ApiFetch";
+import { changeSettings, isOk, useReloadHw } from "./utils/ApiFetch";
 import { SendState, SettingsModel } from './utils/Models';
 
 const ChangeSettings = () => {
@@ -79,7 +79,15 @@ const ChangeSettings = () => {
               <span style={{ width: "100%" }} className="input-group-text">Sınıf değiştir</span>
             </div>
             <Input type="number" name="grade" innerRef={register({ max: 13 })} />
-            <Input type="text" name="letter" innerRef={register({ maxLength: 1 })} />
+            <Input type="select" defaultValue={user.className.charAt(user.className.length - 1)} name="letter" innerRef={register({ maxLength: 1 })}>
+              {(() => {
+                let arr: string[] = [];
+                for (let letter = "A"; letter.charCodeAt(0) <= "L".charCodeAt(0); letter = String.fromCharCode(letter.charCodeAt(0) + 1)) {
+                  arr.push(letter);
+                }
+                return arr.map(l => <option>{l}</option>)
+              })()}
+            </Input>
           </InputGroup>
         </FormGroup>
         {errors.grade ? ([
