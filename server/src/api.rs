@@ -122,6 +122,7 @@ pub fn routes(db: DbConn) -> impl Filter<Extract = impl Reply, Error = Rejection
                     user_amount,
                     model.weight,
                     model.extended_due_date,
+                    model.id,
                     m.id,
                 )
                 .execute(&mut transaction)

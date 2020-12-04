@@ -42,6 +42,7 @@ export function EditModal(props: {
 
   const onSubmit = async (model: Model) => {
     setSending(SendState.InProgress);
+    const normalizedDate = (s: string) => new Date(new Date(s).getTime() - 3 * 60 * 60 * 1000);
     let updateModel = {
       id: hw.id,
       ...(model.amount && {
@@ -50,8 +51,8 @@ export function EditModal(props: {
           { class: parseInt(model.amount) }
       }),
       ...(model.weight && { weight: parseInt(model.weight) }),
-      ...(model.extendedDueDate && { extendedDueDate: new Date(model.extendedDueDate) }),
-      ...(model.dueDate && { dueDate: new Date(model.dueDate) }),
+      ...(model.extendedDueDate && { extendedDueDate: normalizedDate(model.extendedDueDate) }),
+      ...(model.dueDate && { dueDate: normalizedDate(model.dueDate) }),
       ...(model.subject && { subject: model.subject }),
       ...(model.detail && { detail: model.detail })
     };
