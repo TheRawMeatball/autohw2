@@ -103,7 +103,7 @@ const ChangeSettings = () => {
         {sending === SendState.Complete && (
           error ?
             (<Alert color="danger" className="mb-0 mt-2">{error}</Alert>) :
-            (<Alert color="success" className="mb-0 mt-2">Ödev eklendi!</Alert>)
+            (<Alert color="success" className="mb-0 mt-2">Değiştirildi!</Alert>)
         )}
         <Button type="submit" className="mt-2" color="primary">Değiştir</Button>
       </Form>
