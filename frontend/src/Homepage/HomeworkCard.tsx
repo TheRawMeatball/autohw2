@@ -4,7 +4,6 @@ import { Button, Card, CardBody, CardHeader, CardSubtitle, Col, Input, InputGrou
 import { progressHomework, updateHomework } from "../utils/ApiFetch";
 import { useAuthState } from "../utils/GlobalState";
 import { Homework } from "../utils/Models";
-import { EditModal } from "./EditModal";
 
 export function HomeworkCard(props: {
   openEditModal: () => void,
