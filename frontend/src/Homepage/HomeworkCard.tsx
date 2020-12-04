@@ -7,9 +7,10 @@ import { Homework } from "../utils/Models";
 import { EditModal } from "./EditModal";
 
 export function HomeworkCard(props: {
+  openEditModal: () => void,
   homework: Homework,
 }) {
-  const { homework: hw } = props;
+  const { homework: hw, openEditModal } = props;
   const [amountSetState, setState] = useState(0);
   const [forSelf, setForSelf] = useState("false");
 
@@ -37,9 +38,6 @@ export function HomeworkCard(props: {
 
     await updateHomework({ id: hw.id, amount: (forMe ? { me: amount } : { class: amount }) });
   };
-
-  const [editModal, setEditModal] = useState(false);
-  const toggle = () => setEditModal(s => !s);
 
   return (
     <Card className="mt-2">
@@ -76,10 +74,9 @@ export function HomeworkCard(props: {
             <Button className="mx-1 my-1 flex-grow-1" onClick={() => { doHomework(1) }}>Test bitir</Button>
             <Button className="mx-1 my-1 flex-grow-1" onClick={() => { doHomework(Infinity) }}>Hepsini bitir</Button>
             <Button className="mx-1 my-1 flex-grow-1" onClick={() => { doHomework(-1) }}>Geri al</Button>
-            <Button className="mx-1 my-1 flex-grow-1" onClick={() => { toggle() }}>Düzenle</Button>
+            <Button className="mx-1 my-1 flex-grow-1" onClick={() => { openEditModal() }}>Düzenle</Button>
           </div>
         )}
-        <EditModal isOpen={editModal} toggle={toggle} editedHomework={hw} />
       </CardBody>
     </Card>
   );

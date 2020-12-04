@@ -8,6 +8,7 @@ import { Typeahead } from './Typeahead';
 import { dayDiff, useAlgorithm } from './utils/Algorithm';
 import { SortKeyType, SortType, useDateGrouped, usePastCheck, useSorted } from './utils/DateHook';
 import { useReloadHw } from './utils/ApiFetch';
+import { EditModal } from './Homepage/EditModal';
 
 export default function Homepage() {
   const { lists } = useAuthState();
@@ -70,8 +71,9 @@ export default function Homepage() {
   const [seeAlgorithmResults, setSeeAlgorithmResults] = useState(false);
 
   const dateString = useDateString(seeAlgorithmResults);
-
   const reloadHw = useReloadHw();
+
+  const [editedHw, setEditedHw] = useState<Homework | null>(null);
 
   return (
     <Row>
@@ -129,7 +131,7 @@ export default function Homepage() {
       <Col lg>
         {searchResult.length ?
           searchResult.map(hw => (
-            (<HomeworkCard homework={hw} />)
+            (<HomeworkCard openEditModal={() => setEditedHw(hw)} homework={hw} />)
           ))
           : (groups as [SortType<SortKeyType>, Homework[]][]).map(([groupHeader, hwl]) => (
             <div className="mt-2">
@@ -145,12 +147,13 @@ export default function Homepage() {
                 }
               </h4>
               {hwl.map(hw =>
-                (<HomeworkCard homework={hw} />)
+                (<HomeworkCard openEditModal={() => setEditedHw(hw)} homework={hw} />)
               )}
             </div>
           ))
         }
       </Col>
+      <EditModal isOpen={!!editedHw} toggle={() => setEditedHw(null)} editedHomework={editedHw!} />
     </Row>
   );
 }
