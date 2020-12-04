@@ -32,7 +32,7 @@ async fn main() {
 
     let index = std::str::from_utf8(match ClientFiles::get("index.html").unwrap() {
         Cow::Borrowed(c) => c,
-        _ => panic!(),
+        Cow::Owned(c) => Box::leak(Box::new(c)),
     })
     .unwrap();
 
