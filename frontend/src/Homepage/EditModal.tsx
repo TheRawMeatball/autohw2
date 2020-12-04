@@ -51,19 +51,22 @@ export function EditModal(props: {
           { class: parseInt(model.amount) }
       }),
       ...(model.weight && { weight: parseInt(model.weight) }),
-      ...(model.extendedDueDate && { extendedDueDate: normalizedDate(model.extendedDueDate) }),
-      ...(model.dueDate && { dueDate: normalizedDate(model.dueDate) }),
+      ...(model.extendedDueDate && { extendedDueDate: new Date(model.extendedDueDate) }),
+      ...(model.dueDate && { dueDate: new Date(model.dueDate) }),
       ...(model.subject && { subject: model.subject }),
       ...(model.detail && { detail: model.detail })
     };
     let result = await updateHomework(updateModel);
     if (isOk(result)) {
-      setHomeworkList(state => new Map(state.set(hw.id, {
+      const newHwModel = {
         ...hw,
         ...updateModel,
-        amount: (model.amount ? parseInt(model.amount) : hw.amount)
-      })));
-      setError(null);
+        amount: (model.amount ? parseInt(model.amount) : hw.amount),
+        dueDate: model.dueDate ? normalizedDate(model.dueDate) : hw.dueDate,
+        extendedDueDate: model.extendedDueDate ? normalizedDate(model.extendedDueDate) : hw.extendedDueDate,
+      };
+      setHomeworkList(state => new Map(state.set(hw.id, newHwModel)));
+          setError(null);
     } else {
       switch (result.err) {
         default:
