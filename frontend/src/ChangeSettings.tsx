@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useAuthState, useGlobalState } from './utils/GlobalState';
-import { Alert, Button, Col, Form, FormGroup, Input, InputGroup, Label } from 'reactstrap';
+import { Alert, Button, Col, Form, FormGroup, Input, InputGroup, Label, Row } from 'reactstrap';
 import { useForm } from "react-hook-form";
-import { changeSettings, isOk, useReloadHw } from "./utils/ApiFetch";
+import { changeSettings, isOk } from "./utils/ApiFetch";
 import { SendState, SettingsModel } from './utils/Models';
 
 const ChangeSettings = () => {
@@ -30,10 +30,10 @@ const ChangeSettings = () => {
 
   const onSubmit = async (model: Model) => {
     setSending(SendState.InProgress);
-    const m: SettingsModel = { 
+    const m: SettingsModel = {
       username: model.username ? model.username : undefined,
       password: model.password ? model.password : undefined,
-      class: model.letter && model.grade ? [parseInt(model.grade), model.letter]: undefined,
+      class: model.letter && model.grade ? [parseInt(model.grade), model.letter] : undefined,
       weights: [model.mo, model.tu, model.we, model.th, model.fr, model.sa, model.su].map(s => parseInt(s))
     }
     let result = await changeSettings(m);
@@ -52,6 +52,25 @@ const ChangeSettings = () => {
     }
     setSending(SendState.Complete);
   };
+
+  const weekdayDateMap = {
+    Mon: new Date('2020-01-06'),
+    Tue: new Date('2020-01-07'),
+    Wed: new Date('2020-01-08'),
+    Thu: new Date('2020-01-09'),
+    Fri: new Date('2020-01-10'),
+    Sat: new Date('2020-01-11'),
+    Sun: new Date('2020-01-12'),
+  };
+
+  const getDayOfWeek = (shortName: keyof typeof weekdayDateMap, locale = 'tr', length = 'short') =>
+    new Intl.DateTimeFormat(locale, { weekday: length }).format(weekdayDateMap[shortName]);
+
+  const days: string[] = []
+
+  for (const key in weekdayDateMap) {
+    days.push(getDayOfWeek(key as keyof typeof weekdayDateMap, "tr"));
+  }
 
   return (
     <Col lg>
@@ -97,17 +116,24 @@ const ChangeSettings = () => {
           (errors.letter.type === "maxLength" && (<Alert color="danger">1 harf yazın.</Alert>)),
         ]) : null}
         <FormGroup>
-				    <Label>Gün ağırlıkları</Label>
-				    <InputGroup>
-    					<Input type="number" name="mo" defaultValue={user.weights[0]} innerRef={register} />
-						  <Input type="number" name="tu" defaultValue={user.weights[1]} innerRef={register} />
-				      <Input type="number" name="we" defaultValue={user.weights[2]} innerRef={register} />
-				      <Input type="number" name="th" defaultValue={user.weights[3]} innerRef={register} />
-				      <Input type="number" name="fr" defaultValue={user.weights[4]} innerRef={register} />
-				      <Input type="number" name="sa" defaultValue={user.weights[5]} innerRef={register} />
-				      <Input type="number" name="su" defaultValue={user.weights[6]} innerRef={register} />
-				  </InputGroup>
-				</FormGroup>
+          <Label>Gün ağırlıkları</Label>
+          <Row className="w-100 mx-0">
+            {days.map(d =>
+              <Col className="px-0 text-center">
+                {d}
+              </Col>
+            )}
+          </Row>
+          <InputGroup>
+            <Input type="number" name="mo" defaultValue={user.weights[0]} innerRef={register} />
+            <Input type="number" name="tu" defaultValue={user.weights[1]} innerRef={register} />
+            <Input type="number" name="we" defaultValue={user.weights[2]} innerRef={register} />
+            <Input type="number" name="th" defaultValue={user.weights[3]} innerRef={register} />
+            <Input type="number" name="fr" defaultValue={user.weights[4]} innerRef={register} />
+            <Input type="number" name="sa" defaultValue={user.weights[5]} innerRef={register} />
+            <Input type="number" name="su" defaultValue={user.weights[6]} innerRef={register} />
+          </InputGroup>
+        </FormGroup>
         {sending === SendState.Complete && (
           error ?
             (<Alert color="danger" className="mb-0 mt-2">{error}</Alert>) :
