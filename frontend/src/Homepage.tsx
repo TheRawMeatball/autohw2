@@ -9,17 +9,18 @@ import { dayDiff, useAlgorithm } from './utils/Algorithm';
 import { SortKeyType, SortType, useDateGrouped, usePastCheck, useSorted } from './utils/DateHook';
 import { useReloadHw } from './utils/ApiFetch';
 import { EditModal } from './Homepage/EditModal';
+import { usePersistedState } from './utils/usePersistedState';
 
 export default function Homepage() {
   const { lists } = useAuthState();
 
-  const [seeFinished, setSeeFinished] = useState(false);
-  const [seeFinishedEarly, setSeeFinishedEarly] = useState(true);
-  const [seeUnfinishedNew, setSeeUnfinishedNew] = useState(true);
-  const [seeUnfinishedCompletion, setSeeUnfinishedCompletion] = useState(true);
-  const [seeExpired, setSeeExpired] = useState(false);
+  const [seeFinished, setSeeFinished] = usePersistedState("seeFinished", false);
+  const [seeFinishedEarly, setSeeFinishedEarly] = usePersistedState("seeFinishedEarly", true);
+  const [seeUnfinishedNew, setSeeUnfinishedNew] = usePersistedState("seeUnfinishedNew", true);
+  const [seeUnfinishedCompletion, setSeeUnfinishedCompletion] = usePersistedState("seeUnfinishedCompletion", true);
+  const [seeExpired, setSeeExpired] = usePersistedState("seeExpired", false);
 
-  const [reversedOrder, setReversedOrder] = useState(false);
+  const [reversedOrder, setReversedOrder] = usePersistedState("reverseOrder", false);
 
   const hwList = useMemo(() => [
     ...(seeUnfinishedNew ? lists.unfinished : []),
@@ -36,7 +37,7 @@ export default function Homepage() {
     seeFinished
   ]);
 
-  const [sortingType, _setGrouping] = useState<SortKeyType>("dueDate")
+  const [sortingType, _setGrouping] = usePersistedState<SortKeyType>("sortingType", "dueDate")
   const setSorting = (key: SortKeyType) => {
     _setGrouping(key);
     setSearchbar("");
@@ -68,7 +69,7 @@ export default function Homepage() {
   const tomorrowHw = cleanDated[0] ? cleanDated[0][1].reduce((acc, hw) => acc + (hw.amount || 0), 0) : 0;
 
   const [seeSettings, setSeeSettings] = useState(false);
-  const [seeAlgorithmResults, setSeeAlgorithmResults] = useState(false);
+  const [seeAlgorithmResults, setSeeAlgorithmResults] = usePersistedState("seeFullAlgorithm", false);
 
   const dateString = useDateString(seeAlgorithmResults);
   const reloadHw = useReloadHw();
