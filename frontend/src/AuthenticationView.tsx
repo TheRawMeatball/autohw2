@@ -137,7 +137,15 @@ const Register = () => {
               <span style={{ width: "100%" }} className="input-group-text">Sınıf</span>
             </div>
             <Input type="number" name="grade" innerRef={register({ required: true, max: 13 })} />
-            <Input type="text" name="letter" innerRef={register({ required: true, maxLength: 1 })} />
+            <Input type="select" name="letter" innerRef={register({ required: true, maxLength: 1 })}>
+              {(() => {
+                let arr: string[] = [];
+                for (let letter = "A"; letter.charCodeAt(0) <= "L".charCodeAt(0); letter = String.fromCharCode(letter.charCodeAt(0) + 1)) {
+                  arr.push(letter);
+                }
+                return arr.map(l => <option>{l}</option>)
+              })()}
+            </Input>
           </InputGroup>
         </FormGroup>
         {errors.grade ? ([
