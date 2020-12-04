@@ -3,6 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Alert, Button, Form, FormGroup, Input, InputGroup, Label, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import SubjectSearch from "../SubjectSearch";
 import { deleteHomework, isOk, updateHomework } from "../utils/ApiFetch";
+import { usePastCheck } from "../utils/DateHook";
 import { useAuthState } from "../utils/GlobalState";
 import { Homework, SendState } from "../utils/Models";
 
@@ -90,6 +91,7 @@ export function EditModal(props: {
   }
 
   const toggleDeleteModal = () => setDeleteModal(s => !s);
+  const past = usePastCheck();
 
   return (<>
     <Modal isOpen={isOpen} toggle={toggle}>
@@ -117,7 +119,7 @@ export function EditModal(props: {
             <Input type="date" name="dueDate" id="due-date" innerRef={register} />
           </FormGroup>
 
-          {hw.extendedDueDate && (
+          {past(hw.dueDate) && (
             <FormGroup>
               <Label for="extended-due-date">Tamamlama tarihi</Label>
               <Input type="date" name="extendedDueDate" id="extended-due-date" innerRef={register} />

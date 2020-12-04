@@ -6,7 +6,7 @@ import { HomeworkCard } from './Homepage/HomeworkCard';
 import Fuse from 'fuse.js';
 import { Typeahead } from './Typeahead';
 import { dayDiff, useAlgorithm } from './utils/Algorithm';
-import { SortKeyType, SortType, useDateGrouped, useSorted } from './utils/DateHook';
+import { SortKeyType, SortType, useDateGrouped, usePastCheck, useSorted } from './utils/DateHook';
 import { useReloadHw } from './utils/ApiFetch';
 
 export default function Homepage() {
@@ -170,8 +170,3 @@ function useDateString(seeAlgorithm: boolean) {
 const StateToggleButton = ({ state, setState, children, className }:
   { state: boolean, setState: (f: (s: boolean) => boolean) => void, children: string, className?: string }) =>
   <Button className={className} color={state ? "primary" : "secondary"} onClick={() => setState(s => !s)}>{children}</Button>;
-
-const usePastCheck = () => {
-  const { now } = useGlobalState();
-  return (date: Date) => dayDiff(date, now) > 0
-};

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { dayDiff } from "./Algorithm";
 import { DAY_MS, useGlobalState } from "./GlobalState";
 import { Homework } from "./Models";
 import { desc, groupBy, keySorter } from "./Sort";
@@ -54,3 +55,8 @@ export const useSorted = <T extends SortKeyType>(gt: T, hwList: Homework[], reve
             return (reversed ? sorter : desc(sorter))(h1, h2);
         }), [hwList, gt, reversed]
 );
+
+export const usePastCheck = () => {
+    const { now } = useGlobalState();
+    return (date: Date) => dayDiff(date, now) > 0
+};
