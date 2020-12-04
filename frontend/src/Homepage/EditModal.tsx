@@ -36,6 +36,8 @@ export function EditModal(props: {
     extendedDueDate: string;
   };
 
+  const past = usePastCheck();
+
   if (!hw) { return (<></>); }
 
   const onSubmit = async (model: Model) => {
@@ -91,7 +93,6 @@ export function EditModal(props: {
   }
 
   const toggleDeleteModal = () => setDeleteModal(s => !s);
-  const past = usePastCheck();
 
   return (<>
     <Modal isOpen={isOpen} toggle={toggle}>
