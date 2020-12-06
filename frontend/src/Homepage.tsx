@@ -10,6 +10,7 @@ import { SortKeyType, SortType, useDateGrouped, usePastCheck, useSorted } from '
 import { useReloadHw } from './utils/ApiFetch';
 import { EditModal } from './Homepage/EditModal';
 import { usePersistedState } from './utils/usePersistedState';
+import { Tutorial } from './utils/Tutorial';
 
 export default function Homepage() {
   const { lists } = useAuthState();
@@ -70,6 +71,7 @@ export default function Homepage() {
 
   const [seeSettings, setSeeSettings] = useState(false);
   const [seeAlgorithmResults, setSeeAlgorithmResults] = usePersistedState("seeFullAlgorithm", false);
+  const [seeSums, setSeeSums] = usePersistedState("seeSums", false);
 
   const dateString = useDateString(seeAlgorithmResults);
   const reloadHw = useReloadHw();
@@ -101,20 +103,20 @@ export default function Homepage() {
                   <small className="ml-auto">{hw.subject}</small>
                 </div>
               )}
-              placeholder="Ara"
+              placeholder="Ödevleri ara"
             />
             <div className="mt-2 mb-2 flex-button-div">
-              <Button onClick={reloadHw} className="flex-button">Yenile</Button>
+              <Button onClick={reloadHw} className="flex-button">Ödevleri yenile</Button>
               <StateToggleButton className="flex-button" state={seeSettings} setState={setSeeSettings}>Ayarlar</StateToggleButton>
             </div>
             <Collapse isOpen={seeSettings}>
-              <h5 className="text-center">Gruplama</h5>
+              <h5 className="text-center" id="grouping-header">Gruplama</h5>
               <div className="mt-2 mb-1 flex-button-div">
-                <StateToggleButton className="flex-button" state={seeUnfinishedNew} setState={setSeeUnfinishedNew}>Ödevler</StateToggleButton>
-                <StateToggleButton className="flex-button" state={seeUnfinishedCompletion} setState={setSeeUnfinishedCompletion}>Tamamlamalar</StateToggleButton>
-                <StateToggleButton className="flex-button" state={seeFinishedEarly} setState={setSeeFinishedEarly}>Erken bitenler</StateToggleButton>
-                <StateToggleButton className="flex-button" state={seeExpired} setState={setSeeExpired}>Tarihi geçenler</StateToggleButton>
-                <StateToggleButton className="flex-button" state={seeFinished} setState={setSeeFinished}>Bitenler</StateToggleButton>
+                <StateToggleButton className="flex-button" id="unfinished-toggle" state={seeUnfinishedNew} setState={setSeeUnfinishedNew}>Ödevler</StateToggleButton>
+                <StateToggleButton className="flex-button" id="completion-toggle" state={seeUnfinishedCompletion} setState={setSeeUnfinishedCompletion}>Tamamlamalar</StateToggleButton>
+                <StateToggleButton className="flex-button" id="early-toggle" state={seeFinishedEarly} setState={setSeeFinishedEarly}>Erken bitenler</StateToggleButton>
+                <StateToggleButton className="flex-button" id="expired-toggle" state={seeExpired} setState={setSeeExpired}>Tarihi geçenler</StateToggleButton>
+                <StateToggleButton className="flex-button" id="finished-toggle" state={seeFinished} setState={setSeeFinished}>Bitenler</StateToggleButton>
               </div>
               <h5 className="text-center">Sıralama</h5>
               <div className="mt-2 mb-1 flex-button-div">
@@ -123,8 +125,19 @@ export default function Homepage() {
                 <Button className="flex-button" color={((sortingType === "amount" && !searchResult.length) ? "primary" : "secondary")} onClick={() => setSorting("amount")}>Miktar</Button>
                 <StateToggleButton className="flex-button" state={reversedOrder} setState={setReversedOrder}>Tersten</StateToggleButton>
               </div>
-              <hr className="mx-1"/>
-              <StateToggleButton className="w-100" state={seeAlgorithmResults} setState={setSeeAlgorithmResults}>Algoritma göster</StateToggleButton>
+              <hr className="mx-1" />
+              <StateToggleButton className="w-100" state={seeAlgorithmResults} setState={setSeeAlgorithmResults} id="algorithm-toggle">Algoritma göster</StateToggleButton>
+              <StateToggleButton className="w-100 mt-2" state={seeSums} setState={setSeeSums} id="sums-toggle">Toplamları göster</StateToggleButton>
+              {seeSettings && <Tutorial items={[
+                ["grouping-header", "Hangi ödevlerin görünüp hangi ödevlerin gizlenceğini ayarlar"],
+                ["unfinished-toggle", "Bitmemiş ödevler"],
+                ["completion-toggle", "Tamamlanma tarihi olan ödevler"],
+                ["early-toggle", "Erken biten ödevler"],
+                ["expired-toggle", "Tarihi geçmiş ve tamamlama tarihi gelmemiş ödevler"],
+                ["finished-toggle", "Bitmiş ve tarihi geçmiş ödevler"],
+                ["algorithm-toggle", "Ayarlada belirlemiş olduğunuz gün ağırlıklarına göre günlük öneriler gösterir"],
+                ["sums-toggle", "Her gün için ödev toplamını gösterir"],
+              ]} lsKey="settings" />}
             </Collapse>
           </CardBody>
         </Card>
@@ -142,7 +155,7 @@ export default function Homepage() {
                     typeof groupHeader === "string" ?
                       `${groupHeader} (${amountReducer(hwl)} test)`
                       : groupHeader > 10 ** 8 ?
-                        `${dateString(new Date(groupHeader))} (${amountReducer(hwl)})`
+                        `${dateString(new Date(groupHeader))}` + (seeSums ? ` (${amountReducer(hwl)})` : "")
                         : `${groupHeader} testlik ödevler`
                   ) : "Test sayısı bilinmeyenler"
                 }
@@ -171,6 +184,6 @@ function useDateString(seeAlgorithm: boolean) {
       : `${date.toLocaleDateString()}`;
 }
 
-const StateToggleButton = ({ state, setState, children, className }:
-  { state: boolean, setState: (f: (s: boolean) => boolean) => void, children: string, className?: string }) =>
-  <Button className={className} color={state ? "primary" : "secondary"} onClick={() => setState(s => !s)}>{children}</Button>;
+const StateToggleButton = ({ state, setState, children, className, id }:
+  { state: boolean, setState: (f: (s: boolean) => boolean) => void, children: string, className?: string, id?: string }) =>
+  <Button className={className} color={state ? "primary" : "secondary"} onClick={() => setState(s => !s)} id={id}>{children}</Button>;

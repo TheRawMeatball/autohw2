@@ -5,6 +5,7 @@ import { addHomework, isOk } from './utils/ApiFetch';
 import { SendState } from './utils/Models';
 import { useAuthState } from './utils/GlobalState';
 import SubjectSearch from './SubjectSearch';
+import { Tutorial } from './utils/Tutorial';
 
 function AddHomework() {
   type Model = {
@@ -54,6 +55,7 @@ function AddHomework() {
           <Controller
             control={control}
             name="subject"
+            defaultValue=""
             render={({ onChange, value }) => (
               <SubjectSearch value={value} onChange={onChange} />
             )}
@@ -92,6 +94,11 @@ function AddHomework() {
         )}
         <Button className="mt-2" color="primary" type="submit">Ekle</Button>
       </Form>
+      <Tutorial items={[
+        ["detail", "Ödevin kitabını, sayfayı vs. yaz. Dersi buraya yazma."],
+        ["amount", "Ödev miktarı net ise yaz, değilse boş bırak"],
+        ["for-self", "Ödev sadece senin içinse (eski bir ödevi tamamlamak, ek çalışma vb.) buraya bas."],
+      ]} lsKey="add-homework" />
     </Col>
   );
 }

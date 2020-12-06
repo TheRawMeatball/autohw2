@@ -4,6 +4,7 @@ import { Alert, Button, Col, Form, FormGroup, Input, InputGroup, Label, Row } fr
 import { useForm } from "react-hook-form";
 import { changeSettings, isOk } from "./utils/ApiFetch";
 import { SendState, SettingsModel } from './utils/Models';
+import { Tutorial } from './utils/Tutorial';
 
 const ChangeSettings = () => {
   type Model = {
@@ -116,7 +117,7 @@ const ChangeSettings = () => {
           (errors.letter.type === "maxLength" && (<Alert color="danger">1 harf yazın.</Alert>)),
         ]) : null}
         <FormGroup>
-          <Label>Gün ağırlıkları</Label>
+          <Label id="weights-label">Gün ağırlıkları</Label>
           <Row className="w-100 mx-0">
             {days.map(d =>
               <Col className="px-0 text-center">
@@ -140,6 +141,9 @@ const ChangeSettings = () => {
             (<Alert color="success" className="mb-0 mt-2">Değiştirildi!</Alert>)
         )}
         <Button type="submit" className="mt-2" color="primary">Değiştir</Button>
+        <Tutorial items={[
+          ["weights-label", "Algoritmanın belirli bir güne koyduğu ödev miktarını ayarlar"],
+        ]} lsKey="personal-settings" />
       </Form>
     </Col>
   );

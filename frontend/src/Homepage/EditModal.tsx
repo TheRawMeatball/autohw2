@@ -6,6 +6,7 @@ import { deleteHomework, isOk, updateHomework } from "../utils/ApiFetch";
 import { usePastCheck } from "../utils/DateHook";
 import { useAuthState } from "../utils/GlobalState";
 import { Homework, SendState } from "../utils/Models";
+import { Tutorial } from "../utils/Tutorial";
 
 export function EditModal(props: {
   editedHomework: Homework | null,
@@ -66,7 +67,7 @@ export function EditModal(props: {
         extendedDueDate: model.extendedDueDate ? normalizedDate(model.extendedDueDate) : hw.extendedDueDate,
       };
       setHomeworkList(state => new Map(state.set(hw.id, newHwModel)));
-          setError(null);
+      setError(null);
     } else {
       switch (result.err) {
         default:
@@ -154,10 +155,16 @@ export function EditModal(props: {
               (<Alert color="danger" className="mb-0 mt-2">{error}</Alert>) :
               (<Alert color="success" className="mb-0 mt-2">Ödev değiştirildi!</Alert>)
           )}
+          <Tutorial items={[
+            ["amount", "Yandaki buton basılı ise ödev miktarı sadece senin için, değilse bütün sınıf için değişir. Eğer ödev sadece sana ise görünmez."],
+            ["weight", "Planlama algoritmasının bu ödeve aslında olduğundan daha fazla ödevmiş gibi bakmasını sağlar. Normali birdir."],
+            ["change-button", "Boş bırakılan kısımlar değiştirilmez."],
+            ["delete-button", "Bastıktan sonra kişisel veya tüm sınıf için silme olanakları tanır, iptal edilebilir."],
+          ]} lsKey="edit-modal" />
         </ModalBody>
         <ModalFooter>
-          <Button type="submit" className="mr-2 " color="primary">Değiştir</Button>
-          <Button className="mr-2" color="danger" onClick={toggleDeleteModal}>Sil</Button>
+          <Button id="change-button" type="submit" className="mr-2 " color="primary">Değiştir</Button>
+          <Button id="delete-button" className="mr-2" color="danger" onClick={toggleDeleteModal}>Sil</Button>
           <Button color="secondary" onClick={toggle}>İptal</Button>
         </ModalFooter>
       </Form>
