@@ -1,19 +1,15 @@
 use http::StatusCode;
 use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgPoolOptions;
-use std::{borrow::Cow, env};
+use std::env;
 use tokio_compat_02::FutureExt;
 use uuid::Uuid;
-use warp::{reply::Html, Filter, Rejection};
+use warp::{Filter, Rejection};
 
 mod api;
 mod auth;
 
 type DbConn = sqlx::Pool<sqlx::Postgres>;
-
-#[derive(rust_embed::RustEmbed)]
-#[folder = "client_build/"]
-struct ClientFiles;
 
 #[tokio::main]
 async fn main() {
@@ -28,24 +24,9 @@ async fn main() {
 
     let auth_routes = auth::routes(pool.clone());
     let api_routes = api::routes(pool.clone());
-    let client = warp_embed::embed(&ClientFiles);
-
-    let index = std::str::from_utf8(match ClientFiles::get("index.html").unwrap() {
-        Cow::Borrowed(c) => c,
-        Cow::Owned(c) => Box::leak(Box::new(c)),
-    })
-    .unwrap();
 
     let routes = auth_routes
         .or(api_routes)
-        .or(client)
-        .recover(move |err: Rejection| async move {
-            if err.is_not_found() {
-                Ok::<Html<&'static str>, Rejection>(warp::reply::html(index))
-            } else {
-                Err(err)
-            }
-        })
         .recover(|err: Rejection| async move {
             Ok::<_, Rejection>(match err.find() {
                 Some(Errors::Unauthorized) => {
