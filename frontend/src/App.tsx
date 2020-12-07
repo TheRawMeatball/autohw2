@@ -64,7 +64,7 @@ export default function App() {
   const vgl = useMemo(() => {
     const obj = Object.fromEntries(groupBy(Array.from(hwList.values()), hw => {
       if (hw.dueDate.getTime() > now.getTime()) {
-        if (typeof hw.amount !== "undefined" && hw.amount === hw.progress) {
+        if (typeof hw.amount !== "undefined" && hw.amount === hw.progress + hw.delta) {
           return VG.FinishedEarly;
         } else {
           return VG.Unfinished;
