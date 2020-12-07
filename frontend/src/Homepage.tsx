@@ -67,7 +67,7 @@ export default function Homepage() {
 
   const fuse = useMemo(() => new Fuse(hwList, { keys: ["detail", "subject"] }), [hwList])
 
-  const tomorrowHw = cleanDated[0] ? cleanDated[0][1].reduce((acc, hw) => acc + (hw.amount || 0) + hw.progress, 0) : 0;
+  const tomorrowHw = cleanDated[0] ? cleanDated[0][1].reduce((acc, hw) => acc + (hw.amount || 0) - hw.progress, 0) : 0;
 
   const [seeSettings, setSeeSettings] = useState(false);
   const [seeAlgorithmResults, setSeeAlgorithmResults] = usePersistedState("seeFullAlgorithm", false);
