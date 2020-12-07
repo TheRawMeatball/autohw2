@@ -47,7 +47,7 @@ export default function Homepage() {
   const [searchbar, setSearchbar] = useState("");
   const [searchResult, setSearchResult] = useState<Homework[]>([]);
 
-  const amountReducer = (hwl: Homework[]) => hwl.reduce((acc, hw) => acc + (hw.amount || 0), 0);
+  const amountReducer = (hwl: Homework[]) => hwl.reduce((acc, hw) => acc + (hw.amount || 0) - hw.progress, 0);
 
   const program = useAlgorithm();
 
