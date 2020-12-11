@@ -15,6 +15,8 @@ export type User = {
     username: string;
     className: string;
     weights: number[];
+    /** In seconds */
+    offset: number;
 };
 
 export type Homework = {
@@ -63,6 +65,7 @@ export type SettingsModel = {
     username?: string,
     class?: [number, string],
     weights?: number[],
+    offset?: number,
 }
 
 export enum SendState {
@@ -78,5 +81,3 @@ export enum VisibilityGroup {
     Completion = "completion",
     Expired = "expired",
 }
-
-export type VisibilityGroupsList = { [P in VisibilityGroup]: Homework[] };

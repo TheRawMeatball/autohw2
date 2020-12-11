@@ -13,6 +13,7 @@ const ChangeSettings = () => {
     confirmPassword: string;
     grade: string;
     letter: string;
+    offset: string;
     mo: string;
     tu: string;
     we: string;
@@ -35,7 +36,8 @@ const ChangeSettings = () => {
       username: model.username ? model.username : undefined,
       password: model.password ? model.password : undefined,
       class: model.letter && model.grade ? [parseInt(model.grade), model.letter] : undefined,
-      weights: [model.mo, model.tu, model.we, model.th, model.fr, model.sa, model.su].map(s => parseInt(s))
+      weights: [model.mo, model.tu, model.we, model.th, model.fr, model.sa, model.su].map(s => parseInt(s)),
+      offset: 60 * (parseInt(model.offset.substr(0, 2)) * 60 + parseInt(model.offset.substr(3, 2))),
     }
     let result = await changeSettings(m);
     if (isOk(result)) {
@@ -116,6 +118,11 @@ const ChangeSettings = () => {
         {errors.letter ? ([
           (errors.letter.type === "maxLength" && (<Alert color="danger">1 harf yazın.</Alert>)),
         ]) : null}
+        <FormGroup>
+          <Label for="offset">Gün değişim saati</Label>
+          <Input type="time" name="offset" id="offset"
+            innerRef={register} />
+        </FormGroup>
         <FormGroup>
           <Label id="weights-label">Gün ağırlıkları</Label>
           <Row className="w-100 mx-0">

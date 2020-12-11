@@ -9,21 +9,17 @@ import { Navigation } from './Navigation';
 import Homepage from './Homepage';
 import AddHomework from './AddHomework';
 import LoginAndRegister from './AuthenticationView';
-import { GlobalContextObject, GlobalContext, AuthContextObject, DAY_MS } from './utils/GlobalState';
-import { Homework, User, VisibilityGroup as VG, VisibilityGroupsList } from "./utils/Models";
+import { GlobalContextObject, GlobalContext, AuthContextObject, DAY_MS, NowContextObject, useAuthState, VisibilityGroupsContext, VGContextObject } from './utils/GlobalState';
+import { Homework, User, VisibilityGroup as VG } from "./utils/Models";
 import { Container, Row } from 'reactstrap';
 import { getHomeworkList, getSubjectList, isOk } from './utils/ApiFetch';
 import ChangeSettings from './ChangeSettings';
 import { groupBy } from './utils/Sort';
-
-function date() {
-  return new Date(new Date(new Date().getTime() - 8 * 60 * 60 * 1000).toDateString());
-}
+import { useNowBg } from './utils/DateHook';
 
 export default function App() {
   const [hwList, setHwList] = useState<Map<string, Homework>>(new Map());
   const [subjectList, setSubjectList] = useState<Set<string>>(new Set());
-  const [now, setNow] = useState(date());
   const [user, __setUser] = useState<User | undefined>(loadUser());
   const setUser = (user: User) => {
     __setUser(user);
@@ -40,16 +36,6 @@ export default function App() {
     })();
   }, [setHwList, setSubjectList, user]);
 
-  useEffect(() => {
-    const id = setInterval(() => {
-      if (now.getTime() !== date().getTime()) {
-        setNow(date());
-      }
-    }, 60000);
-
-    return () => clearInterval(id);
-  }, [now, setNow]);
-
   const [globalContext] = useState<GlobalContext>({
     login: user => {
       setUser(user);
@@ -57,33 +43,8 @@ export default function App() {
     logout: async () => {
       __setUser(undefined);
       localStorage.removeItem("user");
-    },
-    now: now,
+    }
   });
-
-  const vgl = useMemo(() => {
-    const obj = Object.fromEntries(groupBy(Array.from(hwList.values()), hw => {
-      if (hw.dueDate.getTime() > now.getTime()) {
-        if (typeof hw.amount !== "undefined" && hw.amount === hw.progress + hw.delta) {
-          return VG.FinishedEarly;
-        } else {
-          return VG.Unfinished;
-        }
-      } else if (typeof hw.amount !== "undefined" && hw.amount === hw.progress) {
-        return VG.Finished;
-      } else if (hw.extendedDueDate && hw.extendedDueDate.getTime() > now.getTime()) {
-        return VG.Completion;
-      } else {
-        return VG.Expired;
-      }
-    })) as VisibilityGroupsList;
-    obj.finishedEarly = obj.finishedEarly || [];
-    obj.unfinished = obj.unfinished || [];
-    obj.finished = obj.finished || [];
-    obj.completion = obj.completion || [];
-    obj.expired = obj.expired || [];
-    return obj;
-  }, [now, hwList]);
 
   return (
     <GlobalContextObject.Provider value={globalContext}>
@@ -99,7 +60,6 @@ export default function App() {
                       user: user,
                       subjectList: subjectList,
                       homeworkList: hwList,
-                      lists: vgl,
                       setSubjectList: setSubjectList,
                       setHomeworkList: setHwList,
                     }}>
@@ -117,21 +77,52 @@ export default function App() {
 }
 
 function LoggedInBody() {
+  const now = useNowBg();
+  const { homeworkList: hwList } = useAuthState();
+
+  const vgl = useMemo(() => {
+    const obj = Object.fromEntries(groupBy(Array.from(hwList.values()), hw => {
+      if (hw.dueDate.getTime() > now.getTime()) {
+        if (typeof hw.amount !== "undefined" && hw.amount === hw.progress + hw.delta) {
+          return VG.FinishedEarly;
+        } else {
+          return VG.Unfinished;
+        }
+      } else if (typeof hw.amount !== "undefined" && hw.amount === hw.progress) {
+        return VG.Finished;
+      } else if (hw.extendedDueDate && hw.extendedDueDate.getTime() > now.getTime()) {
+        return VG.Completion;
+      } else {
+        return VG.Expired;
+      }
+    })) as VisibilityGroupsContext;
+    obj.finishedEarly = obj.finishedEarly || [];
+    obj.unfinished = obj.unfinished || [];
+    obj.finished = obj.finished || [];
+    obj.completion = obj.completion || [];
+    obj.expired = obj.expired || [];
+    return obj;
+  }, [now, hwList]);
+
   return (
-    <Switch>
-      <Route exact path="/add-homework">
-        <AddHomework />
-      </Route>
-      <Route exact path="/change-settings">
-        <ChangeSettings />
-      </Route>
-      <Route exact path="/">
-        <Homepage />
-      </Route>
-      <Route path="/">
-        <h1>NOT FOUND!</h1>
-      </Route>
-    </Switch>
+    <NowContextObject.Provider value={now}>
+      <VGContextObject.Provider value={vgl}>
+        <Switch>
+          <Route exact path="/add-homework">
+            <AddHomework />
+          </Route>
+          <Route exact path="/change-settings">
+            <ChangeSettings />
+          </Route>
+          <Route exact path="/">
+            <Homepage />
+          </Route>
+          <Route path="/">
+            <h1>NOT FOUND!</h1>
+          </Route>
+        </Switch>
+      </VGContextObject.Provider>
+    </NowContextObject.Provider>
   )
 }
 

@@ -66,6 +66,7 @@ struct UserModel {
     username: String,
     class_name: String,
     weights: Vec<i32>,
+    offset: i32,
 }
 
 #[derive(Serialize, Deserialize)]

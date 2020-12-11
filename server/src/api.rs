@@ -189,7 +189,8 @@ pub fn routes(db: DbConn) -> impl Filter<Extract = impl Reply, Error = Rejection
         .and(warp::body::json())
         .and_then(|m: AuthModel, db, model: UpdateUserModel| async move {
             let class_name = model.class.map(|(g, l)| format!("{}-{}", g, l));
-            let model = query_file!(
+            let model = query_file_as!(
+                UserModel,
                 "queries/update_user.sql",
                 model.username,
                 class_name,
@@ -197,17 +198,14 @@ pub fn routes(db: DbConn) -> impl Filter<Extract = impl Reply, Error = Rejection
                     .password
                     .map(|p| bcrypt::hash(&p, bcrypt::DEFAULT_COST).unwrap()),
                 model.weights.as_ref().map(|w| &w[..]),
+                model.offset,
                 m.id
             )
             .fetch_one(&db)
             .await
             .map_err(|e| Errors::DbError(e))?;
 
-            Ok::<_, Rejection>(warp::reply::json(&UserModel {
-                username: model.username.unwrap(),
-                class_name: model.class_name.unwrap(),
-                weights: model._weights.unwrap(),
-            }))
+            Ok::<_, Rejection>(warp::reply::json(&model))
         });
 
     let delete_homework = warp::path!("delete-homework")
@@ -309,6 +307,7 @@ struct UpdateUserModel {
     username: Option<String>,
     class: Option<(i32, char)>,
     weights: Option<[i32; 7]>,
+    offset: Option<i32>,
 }
 
 #[derive(Serialize, Deserialize)]

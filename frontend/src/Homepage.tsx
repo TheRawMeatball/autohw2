@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Button, Card, CardBody, CardHeader, CardText, Col, Collapse, Row } from 'reactstrap';
-import { DAY_MS, useAuthState, useGlobalState } from './utils/GlobalState';
+import { DAY_MS, useAuthState, useGlobalState, useNow, useVGLists } from './utils/GlobalState';
 import { Homework } from "./utils/Models";
 import { HomeworkCard } from './Homepage/HomeworkCard';
 import Fuse from 'fuse.js';
@@ -13,7 +13,7 @@ import { usePersistedState } from './utils/usePersistedState';
 import { Tutorial } from './utils/Tutorial';
 
 export default function Homepage() {
-  const { lists } = useAuthState();
+  const lists = useVGLists();
 
   const [seeFinished, setSeeFinished] = usePersistedState("seeFinished", false);
   const [seeFinishedEarly, setSeeFinishedEarly] = usePersistedState("seeFinishedEarly", true);
@@ -173,7 +173,7 @@ export default function Homepage() {
 }
 
 function useDateString(seeAlgorithm: boolean) {
-  const { now } = useGlobalState();
+  const now = useNow();
   const tomorrow = new Date(now.getTime() + DAY_MS);
   const program = useAlgorithm();
   const past = usePastCheck();

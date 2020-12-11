@@ -1,6 +1,6 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { dayDiff } from "./Algorithm";
-import { DAY_MS, useGlobalState } from "./GlobalState";
+import { DAY_MS, useAuthState, useGlobalState, useNow } from "./GlobalState";
 import { Homework } from "./Models";
 import { desc, groupBy, keySorter } from "./Sort";
 
@@ -9,7 +9,7 @@ export type SortType<T extends SortKeyType> = Homework[T] extends Date ? number 
 
 export const useDateGrouped = (hwList: Homework[], reversed: boolean) => {
     const sorted = useSorted("dueDate", hwList, !reversed);
-    const { now } = useGlobalState();
+    const now = useNow();
     return useMemo(() => {
         if (sorted.length > 0) {
             const lastDay = sorted[sorted.length - 1][0];
@@ -57,6 +57,28 @@ export const useSorted = <T extends SortKeyType>(gt: T, hwList: Homework[], reve
 );
 
 export const usePastCheck = () => {
-    const { now } = useGlobalState();
+    const now = useNow();
     return (date: Date) => dayDiff(date, now) <= 0
 };
+
+const dateFn = (offset: number) => {
+    return new Date(new Date(new Date().getTime() - offset * 1000).toDateString());
+}
+
+export const useNowBg = () => {
+    const { user } = useAuthState();
+    const [now, setNow] = useState(dateFn(user.offset));
+
+    useEffect(() => {
+        const id = setInterval(() => {
+            let date = dateFn(user.offset);
+            if (now.getTime() !== date.getTime()) {
+                setNow(date);
+            }
+        }, 60000);
+
+        return () => clearInterval(id);
+    }, [user, now, setNow]);
+
+    return now;
+}

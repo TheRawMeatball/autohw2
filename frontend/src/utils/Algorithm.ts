@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { DAY_MS, useAuthState, useGlobalState } from "./GlobalState";
+import { DAY_MS, useAuthState, useGlobalState, useNow, useVGLists } from "./GlobalState";
 import { Homework } from "./Models";
 import { useDateGrouped } from "./DateHook";
 
@@ -9,9 +9,10 @@ type WM = {
 };
 
 export const useAlgorithm = () => {
-    const { lists, user } = useAuthState();
-    const { now } = useGlobalState();
-    const daySorted = useDateGrouped([...lists.unfinished, ...lists.completion], false);
+    const { user } = useAuthState();
+    const now = useNow();
+    const { unfinished, completion } = useVGLists();
+    const daySorted = useDateGrouped([...unfinished, ...completion], false);
 
     const [wasmModule, setWasmModule] = useState<null | WM>(null);
 
