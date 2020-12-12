@@ -80,4 +80,5 @@ export enum VisibilityGroup {
     Unfinished = "unfinished",
     Completion = "completion",
     Expired = "expired",
+    Today = "today",
 }

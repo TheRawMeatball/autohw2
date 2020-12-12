@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { dayDiff } from "./Algorithm";
-import { DAY_MS, useAuthState, useGlobalState, useNow } from "./GlobalState";
+import { DAY_MS, useAuthState, useNow } from "./GlobalState";
 import { Homework } from "./Models";
 import { desc, groupBy, keySorter } from "./Sort";
 
@@ -56,9 +56,12 @@ export const useSorted = <T extends SortKeyType>(gt: T, hwList: Homework[], reve
         }), [hwList, gt, reversed]
 );
 
-export const usePastCheck = () => {
+export const usePastCheck = (_now?: Date, nowInPast?: boolean) => {
     const now = useNow();
-    return (date: Date) => dayDiff(date, now) <= 0
+    return (date: Date) => {
+        const diff = dayDiff(date, _now || now);
+        return nowInPast ? (diff < 0) : (diff <= 0);
+    }
 };
 
 const dateFn = (offset: number) => {

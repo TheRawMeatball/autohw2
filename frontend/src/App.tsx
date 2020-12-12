@@ -15,7 +15,7 @@ import { Container, Row } from 'reactstrap';
 import { getHomeworkList, getSubjectList, isOk } from './utils/ApiFetch';
 import ChangeSettings from './ChangeSettings';
 import { groupBy } from './utils/Sort';
-import { useNowBg } from './utils/DateHook';
+import { useNowBg, usePastCheck } from './utils/DateHook';
 
 export default function App() {
   const [hwList, setHwList] = useState<Map<string, Homework>>(new Map());
@@ -79,15 +79,18 @@ export default function App() {
 function LoggedInBody() {
   const now = useNowBg();
   const { homeworkList: hwList } = useAuthState();
+  const past = usePastCheck(now);
 
   const vgl = useMemo(() => {
     const obj = Object.fromEntries(groupBy(Array.from(hwList.values()), hw => {
-      if (hw.dueDate.getTime() > now.getTime()) {
+      if (!past(hw.dueDate)) {
         if (typeof hw.amount !== "undefined" && hw.amount === hw.progress + hw.delta) {
           return VG.FinishedEarly;
         } else {
           return VG.Unfinished;
         }
+      } else if (hw.dueDate.toDateString() === now.toDateString()) {
+        return VG.Today;
       } else if (typeof hw.amount !== "undefined" && hw.amount === hw.progress) {
         return VG.Finished;
       } else if (hw.extendedDueDate && hw.extendedDueDate.getTime() > now.getTime()) {
@@ -101,8 +104,9 @@ function LoggedInBody() {
     obj.finished = obj.finished || [];
     obj.completion = obj.completion || [];
     obj.expired = obj.expired || [];
+    obj.today = obj.today || [];
     return obj;
-  }, [now, hwList]);
+  }, [now, hwList, past]);
 
   return (
     <NowContextObject.Provider value={now}>

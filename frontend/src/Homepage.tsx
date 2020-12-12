@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Button, Card, CardBody, CardHeader, CardText, Col, Collapse, Row } from 'reactstrap';
-import { DAY_MS, useAuthState, useGlobalState, useNow, useVGLists } from './utils/GlobalState';
+import { DAY_MS, useNow, useVGLists } from './utils/GlobalState';
 import { Homework } from "./utils/Models";
 import { HomeworkCard } from './Homepage/HomeworkCard';
 import Fuse from 'fuse.js';
@@ -18,6 +18,7 @@ export default function Homepage() {
   const [seeFinished, setSeeFinished] = usePersistedState("seeFinished", false);
   const [seeFinishedEarly, setSeeFinishedEarly] = usePersistedState("seeFinishedEarly", true);
   const [seeUnfinishedNew, setSeeUnfinishedNew] = usePersistedState("seeUnfinishedNew", true);
+  const [seeToday, setSeeToday] = usePersistedState("seeToday", true);
   const [seeUnfinishedCompletion, setSeeUnfinishedCompletion] = usePersistedState("seeUnfinishedCompletion", true);
   const [seeExpired, setSeeExpired] = usePersistedState("seeExpired", false);
 
@@ -29,13 +30,15 @@ export default function Homepage() {
     ...(seeFinished ? lists.finished : []),
     ...(seeFinishedEarly ? lists.finishedEarly : []),
     ...(seeExpired ? lists.expired : []),
+    ...(seeToday ? lists.today : []),
   ], [
     lists,
     seeFinishedEarly,
     seeUnfinishedCompletion,
     seeUnfinishedNew,
     seeExpired,
-    seeFinished
+    seeFinished,
+    seeToday,
   ]);
 
   const [sortingType, _setGrouping] = usePersistedState<SortKeyType>("sortingType", "dueDate")
@@ -115,6 +118,7 @@ export default function Homepage() {
                 <StateToggleButton className="flex-button" id="unfinished-toggle" state={seeUnfinishedNew} setState={setSeeUnfinishedNew}>Ödevler</StateToggleButton>
                 <StateToggleButton className="flex-button" id="completion-toggle" state={seeUnfinishedCompletion} setState={setSeeUnfinishedCompletion}>Tamamlamalar</StateToggleButton>
                 <StateToggleButton className="flex-button" id="early-toggle" state={seeFinishedEarly} setState={setSeeFinishedEarly}>Erken bitenler</StateToggleButton>
+                <StateToggleButton className="flex-button" id="today-toggle" state={seeToday} setState={setSeeToday}>Bugün</StateToggleButton>
                 <StateToggleButton className="flex-button" id="expired-toggle" state={seeExpired} setState={setSeeExpired}>Tarihi geçenler</StateToggleButton>
                 <StateToggleButton className="flex-button" id="finished-toggle" state={seeFinished} setState={setSeeFinished}>Bitenler</StateToggleButton>
               </div>
@@ -135,6 +139,7 @@ export default function Homepage() {
                 ["early-toggle", "Erken biten ödevler"],
                 ["expired-toggle", "Tarihi geçmiş ve tamamlama tarihi gelmemiş ödevler"],
                 ["finished-toggle", "Bitmiş ve tarihi geçmiş ödevler"],
+                ["today-toggle", "Bugüne olan ödevler"],
                 ["algorithm-toggle", "Ayarlada belirlemiş olduğunuz gün ağırlıklarına göre günlük öneriler gösterir"],
                 ["sums-toggle", "Her gün için ödev toplamını gösterir"],
               ]} lsKey="settings" />}
@@ -176,11 +181,19 @@ function useDateString(seeAlgorithm: boolean) {
   const now = useNow();
   const tomorrow = new Date(now.getTime() + DAY_MS);
   const program = useAlgorithm();
-  const past = usePastCheck();
+  const past = usePastCheck(undefined, true);
+
   return (date: Date) =>
-    !past(date) ? `${date.toDateString() === tomorrow.toDateString() ? "Yarın" : new Intl.DateTimeFormat("tr", { weekday: "long" }).format(date)}` +
-      ` (${date.toLocaleDateString()})` +
-      (seeAlgorithm ? ` (${program[dayDiff(date, now)] || 0})` : "")
+    !past(date) ? (
+      (date.toDateString() === now.toDateString()
+        ? "Bugün" :
+        date.toDateString() === tomorrow.toDateString()
+          ? "Yarın" :
+          new Intl.DateTimeFormat("tr", { weekday: "long" }).format(date)
+      )
+      + ` (${date.toLocaleDateString()})`
+      + (seeAlgorithm ? ` (${program[dayDiff(date, now)] || 0})` : "")
+    )
       : `${date.toLocaleDateString()}`;
 }
 

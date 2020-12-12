@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { DAY_MS, useAuthState, useGlobalState, useNow, useVGLists } from "./GlobalState";
+import { DAY_MS, useAuthState, useNow, useVGLists } from "./GlobalState";
 import { Homework } from "./Models";
 import { useDateGrouped } from "./DateHook";
 
