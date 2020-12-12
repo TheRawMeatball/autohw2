@@ -67,7 +67,7 @@ export function HomeworkCard(props: {
             </div>
           </InputGroup>
         )}
-        {typeof hw.amount === "number" && <h4 style={{ marginBottom: 0 }}>{'☑️ '.repeat(hw.progress)}{'✅ '.repeat(hw.delta)}{'✏️ '.repeat(hw.amount - hw.delta - hw.progress)}</h4>}
+        {typeof hw.amount === "number" && <h4 style={{ marginBottom: 0 }}>{'☑️ '.repeat(hw.progress)}{'✅ '.repeat(hw.delta)}{'✏️ '.repeat(Math.abs(hw.amount - hw.delta - hw.progress))}</h4>}
         {typeof hw.amount === "number" && (
           <div className="d-flex flex-wrap w-100">
             <Button className="mx-1 my-1 flex-grow-1" onClick={() => { doHomework(1) }}>Test bitir</Button>
